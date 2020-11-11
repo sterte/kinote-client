@@ -1,1 +1,33 @@
-<p>plan works!</p>
+<div class="container" fxLayout="column" fxLayoutGap="10px" >
+
+    <div fxFlex fxFlexOffset="20px" class="form-size" >
+        <h3>Plan a new movie</h3>        
+        <form novalidate [formGroup]="planForm" #fform="ngForm" (ngSubmit)="onSubmit()">
+            <p>
+                <mat-form-field class="half-width">
+                    <input matInput formControlName="title" placeholder="Title" type="text" required>
+                    <mat-error *ngIf="formErrors.title">
+                        {{formErrors.title}}
+                    </mat-error>
+                </mat-form-field>            
+            </p>        
+            <p>
+            <mat-form-field appearance="fill">
+                <mat-label>From</mat-label>
+                <input matInput [matDatepicker]="fromDay">
+                <mat-datepicker-toggle matSuffix [for]="fromDay"></mat-datepicker-toggle>
+                <mat-datepicker #fromDay color="primary"></mat-datepicker>
+            </mat-form-field>
+            <mat-form-field appearance="fill">
+                <mat-label>To</mat-label>
+                <input matInput [matDatepicker]="toDay">
+                <mat-datepicker-toggle matSuffix [for]="toDay"></mat-datepicker-toggle>
+                <mat-datepicker #toDay color="primary"></mat-datepicker>
+            </mat-form-field>            
+            <button mat-button [disabled]="!fromDay || !toDay" (click)="addDateRange()">Add</button>
+            </p>
+            <button type="submit" mat-button class="background-primary text-floral-white"
+                [disabled]="planForm.invalid">Submit</button>
+        </form>
+    </div> 
+</div>
