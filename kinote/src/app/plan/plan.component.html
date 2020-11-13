@@ -1,16 +1,29 @@
 <div class="container" fxLayout="column" fxLayoutGap="10px" >
 
-    <div fxFlex fxFlexOffset="20px" class="form-size" >
+    <div fxFlex fxFlexOffset="20px" class="form-size" *ngIf="loadingStep === 0">
         <h3>Plan a new movie</h3>        
-        <form novalidate [formGroup]="planForm" #fform="ngForm" (ngSubmit)="onSubmit()">
+        <form novalidate [formGroup]="planForm" #fform="ngForm" (ngSubmit)="onSubmitSearch()">
             <p>
                 <mat-form-field class="half-width">
                     <input matInput formControlName="title" placeholder="Title" type="text" required>
                     <mat-error *ngIf="formErrors.title">
                         {{formErrors.title}}
                     </mat-error>
-                </mat-form-field>            
+                </mat-form-field>
+                <mat-form-field class="half-width">
+                    <input matInput formControlName="director" placeholder="Director" type="text">
+                    <mat-error *ngIf="formErrors.director">
+                        {{formErrors.director}}
+                    </mat-error>
+                </mat-form-field>
+                <mat-form-field class="half-width">
+                    <input matInput formControlName="runningTimeInMinutes" placeholder="Duration" type="text">
+                    <mat-error *ngIf="formErrors.runningTimeInMinutes">
+                        {{formErrors.runningTimeInMinutes}}
+                    </mat-error>
+                </mat-form-field>
             </p>        
+            <!--
             <p>
             <mat-form-field appearance="fill">
                 <mat-label>From</mat-label>
@@ -26,8 +39,24 @@
             </mat-form-field>            
             <button mat-button [disabled]="!fromDay || !toDay" (click)="addDateRange()">Add</button>
             </p>
+            -->
             <button type="submit" mat-button class="background-primary text-floral-white"
                 [disabled]="planForm.invalid">Submit</button>
         </form>
     </div> 
+
+    <div fxFlex *ngIf="loadingStep > 0" [@dissolve]>
+        <mat-grid-list cols="3">
+            <mat-grid-tile *ngFor="let movie of imdbResult">
+            <button (click)="onSelectSearchedMovie(movie.id, movie.s)">
+            <div>
+            <p>{{movie.id}}</p>
+            <p>{{movie.title}}</p>
+            <p>{{movie.year}}</p>
+            <p>{{movie.runningTimeInMinutes}}</p>
+        </div>
+    </button>
+        </mat-grid-tile>
+        </mat-grid-list>
+    </div>
 </div>

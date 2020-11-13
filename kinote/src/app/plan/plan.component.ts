@@ -2,25 +2,37 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Planned, Proposal } from '../shared/planned';
 import { FilmService } from '../services/film.service';
+import { animation } from '@angular/animations';
+import { dissolve } from '../animations/app.animations';
+import { Movie } from '../shared/movie';
 
 @Component({
   selector: 'app-plan',
   templateUrl: './plan.component.html',
-  styleUrls: ['./plan.component.scss']
+  styleUrls: ['./plan.component.scss'],
+  animations: [
+    dissolve()
+  ]
 })
 export class PlanComponent implements OnInit {
 
   planForm: FormGroup;
+  movie: Movie;
   plan: Planned;
   @ViewChild('fform') planFormDirective;  
+  imdbResult: Movie[];
+  imdbSearchCompleted: boolean;
   fromDay: Date;
   toDay: Date;
   fromHour: string;
   toHour: string;
+  loadingStep: number;
 
   formErrors = {
     'title': '',
-  };
+    'runningTimeInMinutes': '',
+    'director': ''
+    };
 
   validationMessages = {
     'title': {
@@ -36,16 +48,14 @@ export class PlanComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.loadingStep = 0;
   }
 
   createForm() {
     this.planForm = this.fb.group({
       title: ['', Validators.required],
-      proposals: [[]],
-      fromDay: null,
-      toDay: null,
-      fromHour: null,
-      toHour: null,
+      runningTimeInMinutes: 0,
+      director: ''
     });
 
     this.planForm.valueChanges
@@ -87,6 +97,35 @@ export class PlanComponent implements OnInit {
     console.log(JSON.stringify(this.plan));
   }
 
+  onSelectSearchedMovie(id: string, cast: string = null) {
+    let index = id.indexOf('/', 1);
+    id = id.substr(index);
+    id = id.replace('/', '');
+    id = id.replace('/', '');
+    this.loadingStep = 2;
+    console.log(id);
+    this.filmService.getShowDetails(id)
+    .subscribe((result) => {      
+      this.planForm.patchValue({
+        title: result.title,
+        runningTimeInMinutes: result.runningTimeInMinutes,
+      });
+      this.loadingStep --;
+    });
+    this.filmService.getShowDirector(id)
+    .subscribe((result) => {      
+      this.planForm.patchValue({
+        director: result.director,        
+      });
+      this.loadingStep --;
+    });
+  }
+
+  onSubmitSearch(): void {    
+    this.filmService.searchShow(this.planForm.value.title)
+    .subscribe((result) => {this.imdbResult = result; this.loadingStep = this.imdbResult.length > 1 ? 1 : 0});        
+  }
+
   onSubmit(): void {
     this.plan = this.planForm.value;
 
@@ -97,7 +136,8 @@ export class PlanComponent implements OnInit {
 
     this.planFormDirective.resetForm({
       title: '',
-      proposals: []
+      runningTimeInMinutes: 0,
+      director: ''
     });
   }
 }

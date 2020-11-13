@@ -21,7 +21,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule } from '@angular/material/core'
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatGridListModule } from '@angular/material/grid-list';
 import { HttpClientModule } from '@angular/common/http';
 
 
@@ -47,6 +48,7 @@ import { HttpClientModule } from '@angular/common/http';
     MatButtonModule,
     MatDatepickerModule,
     MatNativeDateModule,
+    MatGridListModule,
     HttpClientModule
   ],
   providers: [],
